@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using Application.DTOs.Common;
+using Application.Responses;
 using Domain.Common;
 
 namespace Application.Contracts.Persistence;
@@ -8,6 +10,7 @@ public interface IRepository<T> where T : BaseEntity
     Task<IReadOnlyList<T>> GetAllAsync();
     Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate);
 
+    Task<Paginated<T>> GetWherePaginated(PaginateQueryRequest<T> queryRequest);
     Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
         string includeString = null,

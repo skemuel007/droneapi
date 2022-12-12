@@ -14,7 +14,12 @@ public class IDroneDtoValidator : AbstractValidator<IDroneDto>
         RuleFor(d => d.SerialNumber)
             .NotEmpty().NotNull().WithMessage("{PropertyName} is required.")
             .Must(x => x.Length is > 0 and <= 100)
-            .WithMessage("{PropertyName} number characters must be between 1 and 100 characters.");
+            .WithMessage("{PropertyName} number characters must be between 1 and 100 characters.")
+            .MustAsync(async (serialNumber, token) =>
+            {
+                var droneExists = await _dronesRepository.AnyAsync(d => d.SerialNumber == serialNumber);
+                return !droneExists;
+            }).WithMessage("{PropertyName} exists.");
 
         RuleFor(d => d.Model).IsInEnum();
         RuleFor(d => d.State).IsInEnum();
@@ -29,12 +34,6 @@ public class IDroneDtoValidator : AbstractValidator<IDroneDto>
             .GreaterThan(0).WithMessage("{PropertyName} must be greater than 0")
             .LessThanOrEqualTo(100).WithMessage("{PropertyName} must be less than or equal to 100");
 
-        RuleFor(d => d.SerialNumber)
-            .MustAsync(async (serialNumber, token) =>
-            {
-                var droneExists = await _dronesRepository.AnyAsync(d => d.SerialNumber == serialNumber);
-                return droneExists;
-            }).WithMessage("{PropertyName} exists.");
 
     }
 }

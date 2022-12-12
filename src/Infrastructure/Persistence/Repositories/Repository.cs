@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Application.Contracts.Persistence;
+using Application.DTOs.Common;
+using Application.Responses;
 using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +47,32 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return await query.ToListAsync();
     }
 
+    public async Task<Paginated<T>> GetWherePaginated(PaginateQueryRequest<T> queryRequest)
+    {
+        IQueryable<T> query = _dbSet;
+        query = query.AsNoTracking();
+
+        if (queryRequest.Includes != null)
+            query = queryRequest.Includes.Aggregate(query, (current, include) => current.Include(include));
+
+        /*if (queryRequest.Filter != null)
+            query = query.Where(queryRequest.Filter);
+
+        if (queryRequest.OrderBy != null)
+            query = queryRequest.OrderBy(query);*/
+        
+        // do pagination
+        return await Paginated<T>.ToPagedList(
+            query,
+            pageIndex: queryRequest.Page,
+            pageSize: queryRequest.PageSize,
+            sortOrder: queryRequest.SortOrder,
+            sortColumn: queryRequest.SortColumn,
+            filterColumn: queryRequest.FilterColumn,
+            filterQuery: queryRequest.FilterQuery);
+
+
+    }
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null, bool disableTracking = true)
     {
         IQueryable<T> query = _dbSet;

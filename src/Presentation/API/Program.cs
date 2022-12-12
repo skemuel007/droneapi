@@ -32,10 +32,15 @@ builder.Services.AddCors(options =>
         {
             policy.AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .WithExposedHeaders("X-Pagination");
         });
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);

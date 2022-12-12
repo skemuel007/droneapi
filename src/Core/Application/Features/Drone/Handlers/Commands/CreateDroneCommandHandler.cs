@@ -32,7 +32,6 @@ public class CreateDroneCommandHandler : IRequestHandler<CreateDroneCommand, Bas
         {
             return new BaseCommandResponse<Domain.Entities.Drone>()
             {
-                Success = false,
                 Message = "Drone Creation Failed",
                 Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
                 StatusCode = HttpStatusCode.UnprocessableEntity
@@ -46,9 +45,9 @@ public class CreateDroneCommandHandler : IRequestHandler<CreateDroneCommand, Bas
         return new BaseCommandResponse<Domain.Entities.Drone>()
         {
             Message = "Drone creation Successful",
-            StatusCode = HttpStatusCode.Created
+            StatusCode = HttpStatusCode.Created,
+            Data = drone,
+            Success = true
         };
-
-
     }
 }
