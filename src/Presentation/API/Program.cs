@@ -1,20 +1,38 @@
 using Application;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.OpenApi.Models;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Persistence;
+using Serilog;
+using Shared;
+using API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// serilog configuration added
+builder.Host.UseSerilog(SeriLogger.Configure);
+
+builder.WebHost.ConfigureKestrel(ck =>
+{
+    ck.ConfigureHttpsDefaults(httpDf =>
+    {
+        httpDf.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+    });
+});
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddApplication();
+
+builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-#region Swagger
+#region -- Swagger Support and API versioning
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddApiVersioning(o =>
@@ -35,6 +53,10 @@ builder.Services.AddVersionedApiExplorer(options =>
 });
 #endregion
 
+#region -- Health Check Support
+builder.Services.AddHealthChecks().AddDbContextCheck<DronesAppContext>(); // add health checks for db
+#endregion
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,4 +72,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.MapHealthChecks("/hc", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+
+});
+
+app.MigrateDatabase<DronesAppContext>((context, services) =>
+{
+    var logger = services.GetService<ILogger<DronesAppContextSeeder>>();
+    DronesAppContextSeeder
+        .SeedAsync(context, logger)
+        .Wait();
+
+}).Run();
