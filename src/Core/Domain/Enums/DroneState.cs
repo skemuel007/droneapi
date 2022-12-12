@@ -15,5 +15,5 @@ public enum DroneState
     [Description("Delivered")]
     DELIVERED = 5,
     [Description("Returning")]
-    Returning = 6
+    RETURNING = 6
 }
