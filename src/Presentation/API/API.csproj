@@ -31,7 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Core\Application\Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
       <ProjectReference Include="..\..\..\..\Shared\Shared.csproj">
         <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
