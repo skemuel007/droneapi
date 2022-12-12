@@ -11,3 +11,19 @@ services:
     volumes:
       - ~/.aspnet/https:/root/.aspnet/https:ro
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+        
+  db:
+    container_name: drone_db
+    restart: always
+    ports:
+      - "1433:1433"
+    environment:
+      MSSQL_SA_PASSWORD: "droneapp1234"
+      MSSQL_PID: "Developer"
+      MSSQL_USER: "SA"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - drones_data:/var/opt/mssql
+        
+volumes:
+  drones_data:
