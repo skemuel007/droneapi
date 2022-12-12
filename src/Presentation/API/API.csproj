@@ -20,6 +20,13 @@
         </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.11">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Polly" Version="7.2.3" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
     </ItemGroup>
 
     <ItemGroup>
@@ -27,4 +34,14 @@
       <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Extensions\" />
+      <None Remove="AspNetCore.HealthChecks.UI.Client" />
+      <None Remove="Microsoft.EntityFrameworkCore.Design" />
+      <None Remove="Polly" />
+      <None Remove="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+    </ItemGroup>
 </Project>
