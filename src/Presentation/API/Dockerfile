@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["src/Presentation/API/API.csproj", "src/Presentation/API/"]
 COPY ["src/Core/Application/Application.csproj", "src/Core/Application/"]
 COPY ["src/Core/Domain/Domain.csproj", "src/Core/Domain/"]
+COPY ["src/Core/Domain/Shared.csproj", "src/Core/Shared/"]
 COPY ["src/Infrastructure/Persistence/Persistence.csproj", "src/Infrastructure/Persistence/"]
 RUN dotnet restore "src/Presentation/API/API.csproj"
 COPY . .

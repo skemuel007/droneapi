@@ -9,8 +9,9 @@ public static class PersistenceServiceRegistration
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services,
         IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("DronesAppConnectionString");
         services.AddDbContext<DronesAppContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DronesAppConnectionString")));
+            options.UseSqlServer(connectionString));
 
         return services;
     }

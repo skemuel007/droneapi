@@ -42,6 +42,7 @@
       <Folder Include="Extensions\" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\Core\Shared\Shared.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj">
         <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
       </ProjectReference>

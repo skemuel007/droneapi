@@ -9,6 +9,7 @@ using Serilog;
 using Shared;
 using API.Extensions;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // serilog configuration added
@@ -24,6 +25,16 @@ builder.WebHost.ConfigureKestrel(ck =>
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 builder.Services.AddControllers();
 
 builder.Services.AddApplicationServices();
@@ -67,6 +78,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

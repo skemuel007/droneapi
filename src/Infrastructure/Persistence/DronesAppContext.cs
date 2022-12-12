@@ -1,11 +1,20 @@
+using System.Configuration;
 using Domain.Common;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Protocols;
 
 namespace Persistence;
 
 public class DronesAppContext : DbContext
 {
+    /*protected readonly IConfiguration Configuration;
+
+    public DronesAppContext(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }*/
     public DronesAppContext(DbContextOptions<DronesAppContext> options) : base(options)
     {
         
@@ -24,7 +33,11 @@ public class DronesAppContext : DbContext
 
         return base.SaveChangesAsync(cancellationToken);
     }
-    
+
+    /*protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        options.UseSqlServer(ConfigurationManager.ConnectionStrings["DronesAppConnectionString"].ConnectionString);
+    }*/
     public virtual DbSet<Drone> Drones { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)

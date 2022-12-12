@@ -15,7 +15,7 @@ namespace Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SerialNumber = table.Column<string>(type: "varchar(100)", nullable: false),
-                    WeightLimit = table.Column<decimal>(type: "decimal(18, 2", nullable: false),
+                    WeightLimit = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
                     BatteryCapacity = table.Column<int>(type: "int", nullable: false),
                     Model = table.Column<int>(type: "int", nullable: false),
                     State = table.Column<int>(type: "int", nullable: false),
