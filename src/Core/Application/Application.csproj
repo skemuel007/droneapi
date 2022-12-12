@@ -21,10 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Drones\Handlers\Commands" />
-      <Folder Include="Features\Drones\Handlers\Queries" />
-      <Folder Include="Features\Drones\Request\Commands" />
-      <Folder Include="Features\Drones\Request\Queries" />
+      <Folder Include="Features\Drone\Handlers\Queries" />
+      <Folder Include="Features\Drone\Request\Queries" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,8 @@
+using Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence.Repositories;
 
 namespace Persistence;
 
@@ -12,6 +14,14 @@ public static class PersistenceServiceRegistration
         var connectionString = configuration.GetConnectionString("DronesAppConnectionString");
         services.AddDbContext<DronesAppContext>(options =>
             options.UseSqlServer(connectionString));
+        
+        #region -- Add Repository to service collection
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IDronesRepository, DroneRepository>();
+        
+        #endregion
 
         return services;
     }
