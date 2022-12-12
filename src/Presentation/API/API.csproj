@@ -31,13 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
-      <ProjectReference Include="..\..\..\..\Shared\Shared.csproj">
-        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-      </ProjectReference>
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="Extensions\" />
       <None Remove="AspNetCore.HealthChecks.UI.Client" />
       <None Remove="Microsoft.EntityFrameworkCore.Design" />
@@ -47,5 +40,13 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Extensions\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj">
+        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      </ProjectReference>
+      <ProjectReference Include="..\..\Core\Application\Application.csproj">
+        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      </ProjectReference>
     </ItemGroup>
 </Project>
