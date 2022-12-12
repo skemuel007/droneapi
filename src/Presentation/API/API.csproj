@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerComposeProjectPath>../../../docker-compose.dcproj</DockerComposeProjectPath>
+        <UserSecretsId>76a8787d-ec0f-4179-b0dc-0b5ac1de2563</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
