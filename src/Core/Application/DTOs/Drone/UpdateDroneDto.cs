@@ -1,9 +1,9 @@
+using Application.DTOs.Common;
 using Domain.Enums;
 
 namespace Application.DTOs.Drone;
 
-
-public interface IDroneDto
+public class UpdateDroneDto : BaseDTO, IDroneDto
 {
     public string SerialNumber { get; set; }
     public decimal WeightLimit { get; set; }

@@ -10,7 +10,7 @@ namespace Application.Features.Drone.Handlers.Commands;
 
 public class CreateDroneCommandHandler : IRequestHandler<CreateDroneCommand, BaseCommandResponse<Domain.Entities.Drone>>
 {
-    private IDronesRepository _dronesRepository;
+    private readonly IDronesRepository _dronesRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 

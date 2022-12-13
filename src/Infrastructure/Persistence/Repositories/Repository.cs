@@ -1,4 +1,6 @@
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Reflection;
 using Application.Contracts.Persistence;
 using Application.DTOs.Common;
 using Application.Responses;
@@ -31,18 +33,9 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeString = null,
         bool disableTracking = true)
     {
-        IQueryable<T> query = _dbSet;
-        if (disableTracking)
-            query = query.AsNoTracking();
-
-        if (!string.IsNullOrEmpty(includeString))
-            query = query.Include(includeString);
-
-        if (predicate != null)
-            query = query.Where(predicate);
-
-        if (orderBy != null)
-            return await orderBy(query).ToListAsync();
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includeString: includeString,
+            disableTracking: disableTracking);
+        return await query.ToListAsync();
         
         return await query.ToListAsync();
     }
@@ -61,9 +54,42 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         if (queryRequest.OrderBy != null)
             query = queryRequest.OrderBy(query);*/
         
+        if (!string.IsNullOrEmpty(queryRequest.FilterColumn) &&
+            !string.IsNullOrEmpty(queryRequest.FilterQuery) &&
+            IsValidProperty(queryRequest.FilterColumn))
+        {
+            query = query.Where(string.Format("{0}.StartsWith(@0)", queryRequest.FilterColumn, queryRequest.FilterQuery));
+        }
+        var count = await query.CountAsync();
+
+        if (!string.IsNullOrEmpty(queryRequest.SortColumn) &&
+            IsValidProperty(queryRequest.SortColumn))
+        {
+            queryRequest.SortOrder = !string.IsNullOrEmpty(queryRequest.SortOrder) && queryRequest.SortOrder.ToUpper() == "ASC"
+                ? "ASC"
+                : "DESC";
+            query = query.OrderBy(string.Format("{0} {1}", queryRequest.SortColumn, queryRequest.SortOrder)); 
+
+        }
+        
+        query = query.Skip((queryRequest.Page - 1) * queryRequest.PageSize)                                         
+            .Take(queryRequest.PageSize);                                                                
+                                                                                               
+        var data = await query.ToListAsync();
+        
         // do pagination
-        return await Paginated<T>.ToPagedList(
+        /*return await Paginated<T>.ToPagedList(
             query,
+            pageIndex: queryRequest.Page,
+            pageSize: queryRequest.PageSize,
+            sortOrder: queryRequest.SortOrder,
+            sortColumn: queryRequest.SortColumn,
+            filterColumn: queryRequest.FilterColumn,
+            filterQuery: queryRequest.FilterQuery);*/
+        
+        return await Paginated<T>.ToPaginatedList(
+            data: data,
+            count: count,
             pageIndex: queryRequest.Page,
             pageSize: queryRequest.PageSize,
             sortOrder: queryRequest.SortOrder,
@@ -71,9 +97,17 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             filterColumn: queryRequest.FilterColumn,
             filterQuery: queryRequest.FilterQuery);
 
-
     }
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null, bool disableTracking = true)
+    {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.ToListAsync();
+    }
+
+    private async Task<IQueryable<T>> GetQueryable(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null, string includeString = null,
+        bool disableTracking = true)
     {
         IQueryable<T> query = _dbSet;
         if (disableTracking)
@@ -81,17 +115,38 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
         if (includes != null)
             query = includes.Aggregate(query, (current, include) => current.Include(include));
+        
+        if (!string.IsNullOrEmpty(includeString))
+            query = query.Include(includeString);
 
         if (predicate != null)
             query = query.Where(predicate);
 
         if (orderBy != null)
-            return await orderBy(query).ToListAsync();
-        
-        return await query.ToListAsync();
+            return orderBy(query);
+
+        return query;
     }
 
     public async Task<T> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
+
+    public async Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null,
+        bool disableTracking = true)
+    {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.SingleOrDefaultAsync();
+    }
+    
+    public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null,
+        bool disableTracking = true)
+    {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.FirstOrDefaultAsync();
+    }
 
     public async Task<T> AddAsync(T entity)
     {
@@ -121,5 +176,20 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             _dbSet.Attach(entity: entity);
         }
         _dbSet.Remove(entity: entity);
+    }
+    
+    
+    private static bool IsValidProperty(string propertyName,
+        bool throwExceptionIfNotFound = true)
+    {
+        var prop = typeof(T).GetProperty(propertyName,
+            BindingFlags.IgnoreCase |
+            BindingFlags.Public |
+            BindingFlags.Instance);
+
+        if (prop == null && throwExceptionIfNotFound)
+            throw new NotSupportedException(
+                string.Format($"Error: Property '{propertyName}' does not exists."));
+        return prop != null;
     }
 }

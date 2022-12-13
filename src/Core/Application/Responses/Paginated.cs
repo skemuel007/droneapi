@@ -27,7 +27,19 @@ public class Paginated<T> : BaseCommandResponse
         FilterQuery = filterQuery;
     }
 
-    public static async Task<Paginated<T>> ToPagedList(
+    public static async Task<Paginated<T>> ToPaginatedList(
+        List<T> data,
+        int count,
+        int pageIndex,
+        int pageSize,
+        string? sortColumn,
+        string? sortOrder,
+        string? filterColumn = null,
+        string? filterQuery = null)
+    {
+        return new Paginated<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder, filterColumn, filterQuery);
+    }
+    /*public static async Task<Paginated<T>> ToPagedList(
         IQueryable<T> source,
         int pageIndex,
         int pageSize,
@@ -75,7 +87,7 @@ public class Paginated<T> : BaseCommandResponse
             throw new NotSupportedException(
                 string.Format($"Error: Property '{propertyName}' does not exists."));
         return prop != null;
-    }
+    }*/
 
     public List<T> Data { get; set; }
     public int PageIndex { get; set; }
@@ -87,7 +99,7 @@ public class Paginated<T> : BaseCommandResponse
     {
         get
         {
-            return (PageIndex > 0);
+            return (PageIndex > 1);
         }
     }
 
@@ -95,7 +107,7 @@ public class Paginated<T> : BaseCommandResponse
     {
         get
         {
-            return ((PageIndex + 1) < TotalPages);
+            return (PageIndex < TotalPages);
         }
     }
 
