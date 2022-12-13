@@ -70,6 +70,9 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
                 : "DESC";
             query = query.OrderBy(string.Format("{0} {1}", queryRequest.SortColumn, queryRequest.SortOrder)); 
 
+        } else
+        {
+            query = query.OrderBy(x => x.Id);
         }
         
         query = query.Skip((queryRequest.Page - 1) * queryRequest.PageSize)                                         
