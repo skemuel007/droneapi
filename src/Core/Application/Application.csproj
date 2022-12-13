@@ -27,11 +27,6 @@
 
     <ItemGroup>
       <Folder Include="Behaviours" />
-      <Folder Include="DTOs\Medication" />
-      <Folder Include="Features\Medication\Handlers\Commands" />
-      <Folder Include="Features\Medication\Handlers\Queries" />
-      <Folder Include="Features\Medication\Request\Commands" />
-      <Folder Include="Features\Medication\Request\Queries" />
       <Folder Include="Models\" />
     </ItemGroup>
 

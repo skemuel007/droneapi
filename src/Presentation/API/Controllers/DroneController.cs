@@ -14,7 +14,6 @@ namespace API.Controllers;
 public class DroneController : BaseController
 {
     private IMediator _mediator;
-
     public DroneController(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

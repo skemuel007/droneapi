@@ -1,4 +1,5 @@
 using Application.DTOs.Drone;
+using Application.DTOs.Medication;
 using AutoMapper;
 using Domain.Entities;
 
@@ -15,5 +16,9 @@ public class MappingProfile : Profile
                 op => op.MapFrom(src => src.Model.ToString()))
             .ForMember(d => d.DroneState, 
                 op => op.MapFrom(src => src.State.ToString()));
+
+
+        CreateMap<CreateMedicationDto, Medication>().ReverseMap();
+        CreateMap<Medication, MedicationDto>().ReverseMap();
     }
 }

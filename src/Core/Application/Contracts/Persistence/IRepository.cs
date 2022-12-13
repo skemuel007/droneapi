@@ -25,6 +25,13 @@ public interface IRepository<T> where T : BaseEntity
     Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
     Task<T> AddAsync(T entity);
     Task<bool> AddMultipleAsync(IEnumerable<T> entities);
+
+    Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null,
+        bool disableTracking = true);
+    Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null,
+        bool disableTracking = true);
     void Update(T entity);
     void DeleteAsync(T entity);
 }
