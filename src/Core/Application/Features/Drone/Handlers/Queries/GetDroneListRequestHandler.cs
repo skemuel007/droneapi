@@ -10,7 +10,7 @@ namespace Application.Features.Drone.Handlers.Queries;
 
 public class GetDroneListRequestHandler : IRequestHandler<GetDroneListRequest, Paginated<Domain.Entities.Drone>>
 {
-    private IDronesRepository _dronesRepository;
+    private readonly IDronesRepository _dronesRepository;
 
     public GetDroneListRequestHandler(
         IDronesRepository dronesRepository)

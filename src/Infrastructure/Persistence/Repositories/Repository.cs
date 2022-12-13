@@ -33,18 +33,9 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeString = null,
         bool disableTracking = true)
     {
-        IQueryable<T> query = _dbSet;
-        if (disableTracking)
-            query = query.AsNoTracking();
-
-        if (!string.IsNullOrEmpty(includeString))
-            query = query.Include(includeString);
-
-        if (predicate != null)
-            query = query.Where(predicate);
-
-        if (orderBy != null)
-            return await orderBy(query).ToListAsync();
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includeString: includeString,
+            disableTracking: disableTracking);
+        return await query.ToListAsync();
         
         return await query.ToListAsync();
     }
@@ -77,7 +68,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             queryRequest.SortOrder = !string.IsNullOrEmpty(queryRequest.SortOrder) && queryRequest.SortOrder.ToUpper() == "ASC"
                 ? "ASC"
                 : "DESC";
-            query = query.OrderBy(string.Format("{0}", queryRequest.SortColumn, queryRequest.SortOrder)); 
+            query = query.OrderBy(string.Format("{0} {1}", queryRequest.SortColumn, queryRequest.SortOrder)); 
 
         }
         
@@ -109,23 +100,53 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     }
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null, bool disableTracking = true)
     {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.ToListAsync();
+    }
+
+    private async Task<IQueryable<T>> GetQueryable(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null, string includeString = null,
+        bool disableTracking = true)
+    {
         IQueryable<T> query = _dbSet;
         if (disableTracking)
             query = query.AsNoTracking();
 
         if (includes != null)
             query = includes.Aggregate(query, (current, include) => current.Include(include));
+        
+        if (!string.IsNullOrEmpty(includeString))
+            query = query.Include(includeString);
 
         if (predicate != null)
             query = query.Where(predicate);
 
         if (orderBy != null)
-            return await orderBy(query).ToListAsync();
-        
-        return await query.ToListAsync();
+            return orderBy(query);
+
+        return query;
     }
 
     public async Task<T> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
+
+    public async Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null,
+        bool disableTracking = true)
+    {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.SingleOrDefaultAsync();
+    }
+    
+    public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null,
+        bool disableTracking = true)
+    {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.FirstOrDefaultAsync();
+    }
 
     public async Task<T> AddAsync(T entity)
     {
