@@ -1,4 +1,6 @@
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Reflection;
 using Application.Contracts.Persistence;
 using Application.DTOs.Common;
 using Application.Responses;
@@ -61,16 +63,48 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         if (queryRequest.OrderBy != null)
             query = queryRequest.OrderBy(query);*/
         
+        if (!string.IsNullOrEmpty(queryRequest.FilterColumn) &&
+            !string.IsNullOrEmpty(queryRequest.FilterQuery) &&
+            IsValidProperty(queryRequest.FilterColumn))
+        {
+            query = query.Where(string.Format("{0}.StartsWith(@0)", queryRequest.FilterColumn, queryRequest.FilterQuery));
+        }
+        var count = await query.CountAsync();
+
+        if (!string.IsNullOrEmpty(queryRequest.SortColumn) &&
+            IsValidProperty(queryRequest.SortColumn))
+        {
+            queryRequest.SortOrder = !string.IsNullOrEmpty(queryRequest.SortOrder) && queryRequest.SortOrder.ToUpper() == "ASC"
+                ? "ASC"
+                : "DESC";
+            query = query.OrderBy(string.Format("{0}", queryRequest.SortColumn, queryRequest.SortOrder)); 
+
+        }
+        
+        query = query.Skip((queryRequest.Page - 1) * queryRequest.PageSize)                                         
+            .Take(queryRequest.PageSize);                                                                
+                                                                                               
+        var data = await query.ToListAsync();
+        
         // do pagination
-        return await Paginated<T>.ToPagedList(
+        /*return await Paginated<T>.ToPagedList(
             query,
             pageIndex: queryRequest.Page,
             pageSize: queryRequest.PageSize,
             sortOrder: queryRequest.SortOrder,
             sortColumn: queryRequest.SortColumn,
             filterColumn: queryRequest.FilterColumn,
+            filterQuery: queryRequest.FilterQuery);*/
+        
+        return await Paginated<T>.ToPaginatedList(
+            data: data,
+            count: count,
+            pageIndex: queryRequest.Page,
+            pageSize: queryRequest.PageSize,
+            sortOrder: queryRequest.SortOrder,
+            sortColumn: queryRequest.SortColumn,
+            filterColumn: queryRequest.FilterColumn,
             filterQuery: queryRequest.FilterQuery);
-
 
     }
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<Expression<Func<T, object>>> includes = null, bool disableTracking = true)
@@ -121,5 +155,20 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             _dbSet.Attach(entity: entity);
         }
         _dbSet.Remove(entity: entity);
+    }
+    
+    
+    private static bool IsValidProperty(string propertyName,
+        bool throwExceptionIfNotFound = true)
+    {
+        var prop = typeof(T).GetProperty(propertyName,
+            BindingFlags.IgnoreCase |
+            BindingFlags.Public |
+            BindingFlags.Instance);
+
+        if (prop == null && throwExceptionIfNotFound)
+            throw new NotSupportedException(
+                string.Format($"Error: Property '{propertyName}' does not exists."));
+        return prop != null;
     }
 }
