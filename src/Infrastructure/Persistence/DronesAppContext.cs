@@ -54,7 +54,16 @@ public class DronesAppContext : DbContext
                 .HasColumnType("varchar(100)");
 
             entity.Property(d => d.WeightLimit)
-                .HasColumnType("decimal(18, 2");
+                .HasColumnType("decimal(18, 2)");
+        });
+
+        builder.Entity<Medication>(entity =>
+        {
+            entity.HasIndex(m => m.Code)
+                .IsUnique();
+
+            entity.Property(m => m.Code)
+                .IsRequired();
         });
     }
 }

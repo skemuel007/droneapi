@@ -8,4 +8,7 @@ public class Medication : BaseEntity
     public string Name { get; set; }
     [Column(TypeName = "decimal(18,2)")]
     public decimal Weight { get; set; }
+
+    public string Code { get; set; }
+    public string Image { get; set; }
 }
