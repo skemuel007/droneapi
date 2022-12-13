@@ -14,5 +14,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="docker-compose.mac.yml" />
+    <None Include="docker-compose.mac.override.yml" />
   </ItemGroup>
 </Project>

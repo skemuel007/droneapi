@@ -24,20 +24,6 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - drones_data:/var/opt/mssql
-
-  arm_db:
-    container_name: drone_arm_db
-    environment:
-      MSSQL_SA_PASSWORD: "droneapp1234"
-      MSSQL_PID: "Developer"
-      MSSQL_USER: "SA"
-      ACCEPT_EULA: "Y"
-    restart: always
-    ports:
-      - "1433:1433"
-    volumes:
-      - drones_arm_data:/var/opt/mssql
         
 volumes:
   drones_data:
-  drones_arm_data:

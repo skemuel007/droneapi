@@ -1,0 +1,11 @@
+﻿version: '3.4'
+
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: src/Presentation/API/Dockerfile
+
+  arm_db:
+    image: mcr.microsoft.com/azure-sql-edge

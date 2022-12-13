@@ -1,0 +1,29 @@
+﻿version: '3.4'
+
+services:
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ~/.aspnet/https:/root/.aspnet/https:ro
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+
+  arm_db:
+    container_name: drone_arm_db
+    environment:
+      MSSQL_SA_PASSWORD: "droneapp1234"
+      MSSQL_PID: "Developer"
+      MSSQL_USER: "SA"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - drones_arm_data:/var/opt/mssql
+        
+volumes:
+  drones_arm_data:
