@@ -87,12 +87,29 @@ public class MedicationController : BaseController
     [HttpPut(Name = "UpdateMedication")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateDrone([FromBody] UpdateMedicationDto request)
+    public async Task<IActionResult> UpdateMedication([FromBody] UpdateMedicationDto request)
     {
         var response = await _mediator.Send(new UpdateMedicationCommand()
         {
             UpdateMedicationDto = request
         });
+
+        return StatusCode((int)response.StatusCode, response);
+    }
+    
+    /// <summary>
+    /// Delete medication
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete("{medicationId}", Name = "DeleteMedication")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteMedication(Guid medicationId)
+    {
+        var command = new DeleteMedicationCommand() { Id = medicationId };
+        var response = await _mediator.Send(command);
 
         return StatusCode((int)response.StatusCode, response);
     }
