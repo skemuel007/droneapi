@@ -32,7 +32,7 @@ public class CreateDroneCommandHandler : IRequestHandler<CreateDroneCommand, Bas
         {
             return new BaseCommandResponse<Domain.Entities.Drone>()
             {
-                Message = "Drone Creation Failed",
+                Message = "Drone creation validation failed",
                 Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };

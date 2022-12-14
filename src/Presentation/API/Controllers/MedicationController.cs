@@ -41,7 +41,7 @@ public class MedicationController : BaseController
     [HttpGet(Name = "GetMedication")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetDroneById([FromQuery] MedicationDetailsParamsDto request )
+    public async Task<IActionResult> GetMedicationId([FromQuery] MedicationDetailsParamsDto request )
     {
 
         var query = new GetMedicationDetailRequest()
@@ -58,10 +58,10 @@ public class MedicationController : BaseController
     /// </summary>
     /// <param name="queryParams"></param>
     /// <returns></returns>
-    [HttpGet(Name = "MedicationList")]
+    [HttpGet("list", Name = "MedicationList")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> Get([FromQuery] PaginatedQueryParams queryParams)
+    public async Task<IActionResult> GetMedications([FromQuery] PaginatedQueryParams queryParams)
     {
         var response = await _mediator.Send(new GetMedicationListRequest()
         {
@@ -77,5 +77,23 @@ public class MedicationController : BaseController
         });
 
         return Ok(response);
+    }
+    
+    /// <summary>
+    /// Update medication
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPut(Name = "UpdateMedication")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateDrone([FromBody] UpdateMedicationDto request)
+    {
+        var response = await _mediator.Send(new UpdateMedicationCommand()
+        {
+            UpdateMedicationDto = request
+        });
+
+        return StatusCode((int)response.StatusCode, response);
     }
 }

@@ -42,7 +42,7 @@ public class DroneController : BaseController
     [HttpGet(Name = "DroneList")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> Get([FromQuery] PaginatedQueryParams queryParams)
+    public async Task<IActionResult> GetDrones([FromQuery] PaginatedQueryParams queryParams)
     {
         var response = await _mediator.Send(new GetDroneListRequest
         {
@@ -81,7 +81,7 @@ public class DroneController : BaseController
     }
 
     /// <summary>
-    /// Update drone dto
+    /// Update drone
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>

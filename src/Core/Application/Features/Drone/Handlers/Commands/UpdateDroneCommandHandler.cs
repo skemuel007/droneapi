@@ -34,7 +34,7 @@ public class UpdateDroneCommandHandler : IRequestHandler<UpdateDroneCommand, Bas
         {
             return new BaseCommandResponse()
             {
-                Message = "Drone Creation Failed",
+                Message = "Drone update validation failed",
                 Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };
