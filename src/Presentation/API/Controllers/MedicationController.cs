@@ -1,7 +1,9 @@
 using System.Net;
+using Application.DTOs.Common;
 using Application.DTOs.Medication;
 using Application.Features.Medication.Request.Commands;
 using Application.Features.Medication.Request.Queries;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,5 +51,31 @@ public class MedicationController : BaseController
         var response = await _mediator.Send(query);
 
         return StatusCode((int)response.StatusCode, response);
+    }
+    
+    /// <summary>
+    /// Get medication list
+    /// </summary>
+    /// <param name="queryParams"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "MedicationList")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> Get([FromQuery] PaginatedQueryParams queryParams)
+    {
+        var response = await _mediator.Send(new GetMedicationListRequest()
+        {
+            QueryParams = new PaginateQueryRequest<Medication>
+            {
+                FilterColumn = queryParams.FilterColumn,
+                FilterQuery = queryParams.FilterQuery,
+                Page = queryParams.Page,
+                PageSize = queryParams.PageSize,
+                SortColumn = queryParams.SortColumn,
+                SortOrder = queryParams.SortOrder
+            }
+        });
+
+        return Ok(response);
     }
 }

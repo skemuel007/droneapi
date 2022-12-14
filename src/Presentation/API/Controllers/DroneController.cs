@@ -34,6 +34,11 @@ public class DroneController : BaseController
         return StatusCode((int)createDroneResponse.StatusCode, createDroneResponse);
     }
 
+    /// <summary>
+    /// Get paginated drone list
+    /// </summary>
+    /// <param name="queryParams"></param>
+    /// <returns></returns>
     [HttpGet(Name = "DroneList")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]

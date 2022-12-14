@@ -25,6 +25,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Core\Shared\Shared.csproj", "{B4C846F7-3D57-4CF2-8090-B377C5CDCFA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundService", "src\Presentation\BackgroundService\BackgroundService.csproj", "{57D20D9B-44A0-49CB-9D3F-47C53DD15431}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,7 @@ Global
 		{0DFF52DA-3FD9-4DF6-9491-2A34179E22A5} = {4BB42969-6A14-4204-AB7B-DFB4FF5EC75C}
 		{B4C846F7-3D57-4CF2-8090-B377C5CDCFA7} = {0B2AD2D3-0E48-4719-860A-ED5357DCC012}
 
+		{57D20D9B-44A0-49CB-9D3F-47C53DD15431} = {62F6A975-6F61-40B1-9424-9F3A79E29882}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7FE522ED-6A85-439D-AA31-2D5FF5B2B037}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -72,5 +75,9 @@ Global
 		{B4C846F7-3D57-4CF2-8090-B377C5CDCFA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4C846F7-3D57-4CF2-8090-B377C5CDCFA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4C846F7-3D57-4CF2-8090-B377C5CDCFA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57D20D9B-44A0-49CB-9D3F-47C53DD15431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57D20D9B-44A0-49CB-9D3F-47C53DD15431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57D20D9B-44A0-49CB-9D3F-47C53DD15431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57D20D9B-44A0-49CB-9D3F-47C53DD15431}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
