@@ -10,7 +10,7 @@ namespace Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DroneRequest",
+                name: "DroneRequests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -24,9 +24,9 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DroneRequest", x => x.Id);
+                    table.PrimaryKey("PK_DroneRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DroneRequest_Drones_DroneId",
+                        name: "FK_DroneRequests_Drones_DroneId",
                         column: x => x.DroneId,
                         principalTable: "Drones",
                         principalColumn: "Id",
@@ -34,15 +34,15 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DroneRequest_DroneId",
-                table: "DroneRequest",
+                name: "IX_DroneRequests_DroneId",
+                table: "DroneRequests",
                 column: "DroneId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DroneRequest");
+                name: "DroneRequests");
         }
     }
 }

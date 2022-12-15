@@ -28,9 +28,18 @@ public class DronesAppContextSeeder
             await dbContext.SaveChangesAsync();
             logger.LogInformation("Seeding medications table complete...");
         }
+
+        if (ableToSeed)
+        {
+            logger.LogInformation($"Database seeding complete...");
+        }
+        else
+        {
+            logger.LogInformation("No database was seeded.");
+        }
     }
 
-    public static IEnumerable<Medication> GetPreconfiguredMedications()
+    private static IEnumerable<Medication> GetPreconfiguredMedications()
     {
         return new List<Medication>()
         {
@@ -64,7 +73,6 @@ public class DronesAppContextSeeder
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             },
-            
             new Medication()
             {
                 Id = Guid.NewGuid(),
@@ -79,7 +87,7 @@ public class DronesAppContextSeeder
             {
                 Id = Guid.NewGuid(),
                 Name = "Dianofem",
-                Code = "VIULN",
+                Code = "5XVR4",
                 Image = "",
                 Weight = 3.2m,
                 CreatedAt = DateTime.UtcNow,
@@ -88,7 +96,7 @@ public class DronesAppContextSeeder
         };
     }
 
-    public static IEnumerable<Drone> GetPreconfiguredDrones()
+    private static IEnumerable<Drone> GetPreconfiguredDrones()
     {
         return new List<Drone>
             {

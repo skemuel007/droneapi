@@ -11,7 +11,7 @@ namespace Persistence.Migrations
         {
 
             migrationBuilder.CreateTable(
-                name: "Medication",
+                name: "Medications",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -24,12 +24,12 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medication", x => x.Id);
+                    table.PrimaryKey("PK_Medications", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Medication_Code",
-                table: "Medication",
+                name: "IX_Medications_Code",
+                table: "Medications",
                 column: "Code",
                 unique: true);
         }
@@ -37,7 +37,7 @@ namespace Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Medication");
+                name: "Medications");
         }
     }
 }
