@@ -14,4 +14,6 @@ public class Drone : BaseEntity
     public int BatteryCapacity { get; set; }
     public DroneModel Model { get; set; }
     public DroneState State { get; set; }
+
+    public virtual ICollection<DroneRequest> DroneRequests { get; set; }
 }
