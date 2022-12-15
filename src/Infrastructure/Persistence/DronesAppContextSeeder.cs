@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Extensions.Logging;
@@ -8,12 +9,83 @@ public class DronesAppContextSeeder
 {
     public static async Task SeedAsync(DronesAppContext dbContext, ILogger<DronesAppContextSeeder> logger)
     {
+        var ableToSeed = false;
+        logger.LogInformation("Attempting to seed database associated with context {DbContextName}", typeof(DronesAppContext).Name);
         if (!dbContext.Drones.Any())
         {
+            ableToSeed = true;
+            logger.LogInformation($"Seeding drones table...");
             dbContext.Drones.AddRange(GetPreconfiguredDrones());
             await dbContext.SaveChangesAsync();
-            logger.LogInformation("Seed database associated with context {DbContextName}", typeof(DronesAppContext).Name);
+            logger.LogInformation("Seeding drones table complete...");
         }
+        
+        if (!dbContext.Medications.Any())
+        {
+            ableToSeed = true;
+            logger.LogInformation($"Seeding medications table...");
+            dbContext.Medications.AddRange(GetPreconfiguredMedications());
+            await dbContext.SaveChangesAsync();
+            logger.LogInformation("Seeding medications table complete...");
+        }
+    }
+
+    public static IEnumerable<Medication> GetPreconfiguredMedications()
+    {
+        return new List<Medication>()
+        {
+            new Medication()
+            {
+                Id = new Guid("318c0e85-b9c0-4872-ad8a-27f0f2477573"),
+                Name = "Vitamin C",
+                Code = "2ZR5Y",
+                Image = "",
+                Weight = 0.5m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new Medication()
+            {
+                Id = new Guid("50d526de-0e63-4734-bfc2-ee2f68165414"),
+                Name = "Metformin",
+                Code = "S29XX",
+                Image = "",
+                Weight = 2.6m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new Medication()
+            {
+                Id = new Guid("bf12a412-ebbe-4d8e-93a2-6410534f60c0"),
+                Name = "Amoxil",
+                Code = "OEXDL",
+                Image = "",
+                Weight = 1.8m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            
+            new Medication()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Astyfer Syrup",
+                Code = "VIULN",
+                Image = "",
+                Weight = 1.2m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new Medication()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Dianofem",
+                Code = "VIULN",
+                Image = "",
+                Weight = 3.2m,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            }
+        };
     }
 
     public static IEnumerable<Drone> GetPreconfiguredDrones()
@@ -115,10 +187,22 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 100,
                     WeightLimit = 500,
                     Model = DroneModel.CRUISERWEIGHT,
-                    State = DroneState.DELIVERED,
+                    State = DroneState.LOADED,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new Drone
+                {
+                    Id = new Guid("318c0e85-b9c0-4872-ad8a-27f0f2477573"),
+                    SerialNumber = "O34BR-EY9W0-DJCYU-VTXNI-FZ308",
+                    BatteryCapacity = 100,
+                    WeightLimit = 500,
+                    Model = DroneModel.LIGHTWEIGHT,
+                    State = DroneState.DELIVERING,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 }
+
             };
     }
 }

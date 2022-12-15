@@ -39,6 +39,8 @@ public class DronesAppContext : DbContext
         options.UseSqlServer(ConfigurationManager.ConnectionStrings["DronesAppConnectionString"].ConnectionString);
     }*/
     public virtual DbSet<Drone> Drones { get; set; }
+    public virtual DbSet<Medication> Medications { get; set; }
+    public virtual DbSet<DroneRequest> DroneRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
