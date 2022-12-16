@@ -10,6 +10,7 @@ public class DroneRequest : BaseEntity
     public string Destination { get; set; }
     public DroneRequestState Status { get; set; }
     public string DroneRequestCode { get; set; }
+    public virtual ICollection<DronePayload> DronePayloads { get; set; }
 
     public virtual Drone Drone { get; set; }
 }
