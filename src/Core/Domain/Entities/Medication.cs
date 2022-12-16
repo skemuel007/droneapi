@@ -13,4 +13,5 @@ public class Medication : BaseEntity
     [RegularExpression(@"^([A-Z]|[0-9]|[_])+$")]
     public string Code { get; set; }
     public string Image { get; set; }
+    public virtual ICollection<DronePayload> DronePayloads { get; set; }
 }

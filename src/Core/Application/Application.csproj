@@ -27,7 +27,6 @@
 
     <ItemGroup>
       <Folder Include="Behaviours" />
-      <Folder Include="Features\DroneRequest\Handlers\Commands" />
       <Folder Include="Features\DroneRequest\Handlers\Queries" />
       <Folder Include="Features\DroneRequest\Request\Queries" />
       <Folder Include="Models\" />
