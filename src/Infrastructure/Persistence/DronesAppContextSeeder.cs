@@ -129,7 +129,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 89,
                     WeightLimit = 300,
                     Model = DroneModel.CRUISERWEIGHT,
-                    State = DroneState.RETURNING,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -140,7 +140,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 98,
                     WeightLimit = 400,
                     Model = DroneModel.MIDDLEWEIGHT,
-                    State = DroneState.LOADING,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -151,7 +151,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 100,
                     WeightLimit = 400,
                     Model = DroneModel.MIDDLEWEIGHT,
-                    State = DroneState.LOADING,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -162,7 +162,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 100,
                     WeightLimit = 400,
                     Model = DroneModel.CRUISERWEIGHT,
-                    State = DroneState.RETURNING,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -184,7 +184,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 100,
                     WeightLimit = 500,
                     Model = DroneModel.CRUISERWEIGHT,
-                    State = DroneState.DELIVERED,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -195,7 +195,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 100,
                     WeightLimit = 500,
                     Model = DroneModel.CRUISERWEIGHT,
-                    State = DroneState.LOADED,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -206,7 +206,7 @@ public class DronesAppContextSeeder
                     BatteryCapacity = 100,
                     WeightLimit = 500,
                     Model = DroneModel.LIGHTWEIGHT,
-                    State = DroneState.DELIVERING,
+                    State = DroneState.IDLE,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 }

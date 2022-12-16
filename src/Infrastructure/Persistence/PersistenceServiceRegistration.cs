@@ -21,6 +21,7 @@ public static class PersistenceServiceRegistration
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IDronesRepository, DroneRepository>();
         services.AddScoped<IMedicationRepository, MedicationRepository>();
+        services.AddScoped<IDroneRequestRepository, DroneRequestRepository>();
         
         #endregion
 

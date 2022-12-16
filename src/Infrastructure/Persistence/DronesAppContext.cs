@@ -67,5 +67,11 @@ public class DronesAppContext : DbContext
             entity.Property(m => m.Code)
                 .IsRequired();
         });
+
+        builder.Entity<DroneRequest>(entity =>
+        {
+            entity.HasIndex(m => m.DroneRequestCode)
+                .IsUnique();
+        });
     }
 }
