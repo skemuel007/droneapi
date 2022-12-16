@@ -5,39 +5,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Persistence.Migrations
 {
-    public partial class create_medication_table : Migration
+    public partial class initial_migration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.CreateTable(
-                name: "Medications",
+                name: "Drones",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Weight = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SerialNumber = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    WeightLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BatteryCapacity = table.Column<int>(type: "int", nullable: false),
+                    Model = table.Column<int>(type: "int", nullable: false),
+                    State = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medications", x => x.Id);
+                    table.PrimaryKey("PK_Drones", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Medications_Code",
-                table: "Medications",
-                column: "Code",
+                name: "IX_Drones_SerialNumber",
+                table: "Drones",
+                column: "SerialNumber",
                 unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Medications");
+                name: "Drones");
         }
     }
 }

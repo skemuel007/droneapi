@@ -12,7 +12,7 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DronesAppContext))]
-    [Migration("20221208231612_initial_migration")]
+    [Migration("20221216113921_initial_migration")]
     partial class initial_migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("SerialNumber")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("State")
@@ -50,7 +51,7 @@ namespace Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("WeightLimit")
-                        .HasColumnType("decimal(18, 2");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

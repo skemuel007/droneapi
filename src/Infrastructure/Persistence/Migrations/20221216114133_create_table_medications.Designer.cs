@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DronesAppContext))]
-    [Migration("20221213185931_create_medication_table")]
-    partial class create_medication_table
+    [Migration("20221216114133_create_table_medications")]
+    partial class create_table_medications
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -93,7 +93,7 @@ namespace Persistence.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Medication");
+                    b.ToTable("Medications");
                 });
 #pragma warning restore 612, 618
         }

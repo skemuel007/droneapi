@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DronesAppContext))]
-    [Migration("20221216100245_add_unique_constraint_dronerequestcode")]
-    partial class add_unique_constraint_dronerequestcode
+    [Migration("20221216114252_create_table_drone_request")]
+    partial class create_table_drone_request
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

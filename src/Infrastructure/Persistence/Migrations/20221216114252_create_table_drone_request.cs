@@ -18,7 +18,7 @@ namespace Persistence.Migrations
                     Origin = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Destination = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    DroneRequestCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DroneRequestCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -37,6 +37,12 @@ namespace Persistence.Migrations
                 name: "IX_DroneRequests_DroneId",
                 table: "DroneRequests",
                 column: "DroneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DroneRequests_DroneRequestCode",
+                table: "DroneRequests",
+                column: "DroneRequestCode",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
