@@ -1,4 +1,5 @@
 using Application.DTOs.Drone;
+using Application.DTOs.DroneRequest;
 using Application.DTOs.Medication;
 using AutoMapper;
 using Domain.Entities;
@@ -20,5 +21,8 @@ public class MappingProfile : Profile
 
         CreateMap<CreateMedicationDto, Medication>().ReverseMap();
         CreateMap<Medication, MedicationDto>().ReverseMap();
+
+        CreateMap<CreateDroneRequestDto, DroneRequest>().ReverseMap();
+        CreateMap<CreateDroneRequestResponseDto, DroneRequest>().ReverseMap();
     }
 }
