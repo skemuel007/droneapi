@@ -6,5 +6,5 @@ namespace Application.Features.DroneRequest.Request.Commands;
 
 public class CreateDroneRequestCommand : IRequest<BaseCommandResponse<CreateDroneRequestResponseDto>>
 { 
-    public CreateDroneRequestDto DroneDto { get; set; }
+    public CreateDroneRequestDto DroneRequestDto { get; set; }
 }
