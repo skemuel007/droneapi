@@ -41,7 +41,7 @@ public class DronesAppContext : DbContext
     public virtual DbSet<Drone> Drones { get; set; }
     public virtual DbSet<Medication> Medications { get; set; }
     public virtual DbSet<DroneRequest> DroneRequests { get; set; }
-
+    public virtual DbSet<DronePayload> DronePayloads { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(typeof(DronesAppContext).Assembly);
