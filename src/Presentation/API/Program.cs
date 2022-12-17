@@ -50,7 +50,8 @@ builder.Services.AddControllers()
     });
 
 builder.Services.Configure<ElasticSearchSettings>(builder.Configuration.GetSection("ElasticConfiguration"));
-builder.Services.AddApplicationServices();
+// builder.Services.Configure<DroneConfiguration>(builder.Configuration.GetSection("DroneConfiguration"));
+builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddAuditTrail<AuditTrailLog>(options =>
     options.UseSettings(indexPerMonth, amountOfPreviousIndicesUsedInAlias));

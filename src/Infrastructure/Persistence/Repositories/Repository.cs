@@ -25,6 +25,15 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return await _dbContext.Set<T>().ToListAsync();
     }
 
+    public async Task<IEnumerable<T>> GetAsEnumerableAsync(Expression<Func<T, bool>> predicate = null, 
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
+        List<Expression<Func<T, object>>> includes = null, bool disableTracking = true)
+    {
+        var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
+            disableTracking: disableTracking);
+        return await query.ToListAsync();
+    }
+
     public async Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate)
     {
         return await _dbSet.Where(predicate).ToListAsync();
@@ -37,7 +46,6 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             disableTracking: disableTracking);
         return await query.ToListAsync();
         
-        return await query.ToListAsync();
     }
 
     public async Task<Paginated<T>> GetWherePaginated(PaginateQueryRequest<T> queryRequest)

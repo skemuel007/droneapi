@@ -8,19 +8,16 @@ public class AddDronePayloadDtoValidator : AbstractValidator<AddDronePayloadDto>
 { 
     private readonly IMedicationRepository _medicationRepository; 
     private readonly IDroneRequestRepository _droneRequestRepository;
-    private readonly IDronePayloadRepository _dronePayloadRepository; 
     
     public AddDronePayloadDtoValidator(
-        IDronePayloadRepository dronePayloadRepository, 
         IDroneRequestRepository droneRequestRepository, 
         IMedicationRepository medicationRepository) 
     { 
-        _dronePayloadRepository = dronePayloadRepository ?? throw new ArgumentNullException(nameof(dronePayloadRepository)); 
         _droneRequestRepository = droneRequestRepository ?? throw new ArgumentNullException(nameof(droneRequestRepository));
         _medicationRepository = medicationRepository ?? throw new ArgumentNullException(nameof(medicationRepository));
 
         RuleFor(dp => dp.Quantity)
-            .NotEmpty().NotEmpty().WithMessage("{PropertyName} is required.")
+            .NotEmpty().NotNull().WithMessage("{PropertyName} is required.")
             .GreaterThan(0).WithMessage("{PropertyName} should be greater than 0.");
         
         RuleFor(dp => dp.MedicationId)
@@ -30,6 +27,41 @@ public class AddDronePayloadDtoValidator : AbstractValidator<AddDronePayloadDto>
                 var medicationExists = await _medicationRepository.AnyAsync(d => d.Id == medicationId );
                 return medicationExists;
             }).WithMessage("Invalid medication id, please enter a valid medication id.");
+        
+        RuleFor(dp => dp.DroneRequestId)
+            .NotEmpty().NotNull().WithMessage("{PropertyName} property is required.")
+            .MustAsync(async (droneRequestId, token) =>
+            {
+                var droneRequestExists = await _droneRequestRepository.AnyAsync(d => d.Id == droneRequestId );
+                return droneRequestExists;
+            }).WithMessage("Invalid droneRequest id, please enter a valid droneRequest id.");
+    }
+}
+
+public class AddDroneMultiPayloadDtoValidator : AbstractValidator<AddDroneMultiPayloadDto>
+{ 
+    private readonly IMedicationRepository _medicationRepository; 
+    private readonly IDroneRequestRepository _droneRequestRepository;
+    
+    public AddDroneMultiPayloadDtoValidator(
+        IDroneRequestRepository droneRequestRepository, 
+        IMedicationRepository medicationRepository) 
+    { 
+        _droneRequestRepository = droneRequestRepository ?? throw new ArgumentNullException(nameof(droneRequestRepository));
+        _medicationRepository = medicationRepository ?? throw new ArgumentNullException(nameof(medicationRepository));
+
+        RuleFor(dp => dp.Quantity)
+            .NotEmpty().NotNull().WithMessage("{PropertyName} is required.")
+            .GreaterThan(0).WithMessage("{PropertyName} should be greater than 0.");
+        
+        RuleForEach(dp => dp.MedicationIds)
+            .NotEmpty().NotNull().WithMessage("{PropertyName} property is required.")
+            .Must( dp => dp <= 0).WithMessage("{PropertyName} list cannot be less than 0.")
+            .MustAsync(async (medicationId, token) =>
+            {
+                var medicationExists = await _medicationRepository.AnyAsync(d => d.Id == medicationId );
+                return medicationExists;
+            }).WithMessage("Invalid medication id, please enter a valid medication id at {CollectionINdex}.");
         
         RuleFor(dp => dp.DroneRequestId)
             .NotEmpty().NotNull().WithMessage("{PropertyName} property is required.")

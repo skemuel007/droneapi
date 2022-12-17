@@ -16,6 +16,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
       <PackageReference Include="NEST" Version="7.17.5" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
       <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.23" />
@@ -27,7 +28,6 @@
 
     <ItemGroup>
       <Folder Include="Behaviours" />
-      <Folder Include="Features\DronePayload\Handlers\Commands" />
       <Folder Include="Features\DronePayload\Handlers\Queries" />
       <Folder Include="Features\DronePayload\Request\Queries" />
       <Folder Include="Features\DroneRequest\Handlers\Queries" />

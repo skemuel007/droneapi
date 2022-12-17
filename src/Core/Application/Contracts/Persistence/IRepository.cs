@@ -8,6 +8,10 @@ namespace Application.Contracts.Persistence;
 public interface IRepository<T> where T : BaseEntity
 {
     Task<IReadOnlyList<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAsEnumerableAsync(Expression<Func<T, bool>> predicate = null, 
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
+        List<Expression<Func<T, object>>> includes = null, 
+        bool disableTracking = true);
     Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate);
 
     Task<Paginated<T>> GetWherePaginated(PaginateQueryRequest<T> queryRequest);

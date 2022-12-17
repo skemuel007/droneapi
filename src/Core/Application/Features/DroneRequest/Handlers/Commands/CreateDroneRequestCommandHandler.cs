@@ -5,10 +5,12 @@ using Application.DTOs.DroneRequest;
 using Application.DTOs.DroneRequest.Validators;
 using Application.Features.Drone.Request.Commands;
 using Application.Features.DroneRequest.Request.Commands;
+using Application.Models;
 using Application.Responses;
 using AutoMapper;
 using Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace Application.Features.DroneRequest.Handlers.Commands;
 
@@ -18,18 +20,21 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
     private readonly IDronesRepository _dronesRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private DroneConfiguration _droneConfiguration;
 
     public CreateDroneRequestCommandHandler(
         IDroneRequestRepository droneRequestRepository,
         IDronesRepository dronesRepository,
         IMapper mapper,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IOptions<DroneConfiguration> droneConfigurationOption)
     {
         _droneRequestRepository =
             droneRequestRepository ?? throw new ArgumentNullException(nameof(droneRequestRepository));
         _dronesRepository = dronesRepository ?? throw new ArgumentNullException(nameof(dronesRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _droneConfiguration = droneConfigurationOption.Value;
     }
 
     public async Task<BaseCommandResponse<CreateDroneRequestResponseDto>> Handle(CreateDroneRequestCommand command,
@@ -54,6 +59,16 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
             return new BaseCommandResponse<CreateDroneRequestResponseDto>()
             {
                 Message = "Cannot create drone request for drone not in Idle state",
+                Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
+                StatusCode = HttpStatusCode.UnprocessableEntity
+            };
+        }
+
+        if (droneStateCheck.BatteryCapacity < _droneConfiguration.MinBatteryCapacity)
+        {
+            return new BaseCommandResponse<CreateDroneRequestResponseDto>()
+            {
+                Message = $"Cannot create drone request for drone with battery percentage less than {_droneConfiguration.MinBatteryCapacity} percent",
                 Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };

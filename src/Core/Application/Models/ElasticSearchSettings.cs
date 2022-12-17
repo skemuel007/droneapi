@@ -1,6 +1,6 @@
 namespace Application.Models;
 
-public abstract class ElasticSearchSettings
+public class ElasticSearchSettings
 {
     public string Uri { get; set; }
 }

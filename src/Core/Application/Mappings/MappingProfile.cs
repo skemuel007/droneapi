@@ -1,4 +1,5 @@
 using Application.DTOs.Drone;
+using Application.DTOs.DronePayload;
 using Application.DTOs.DroneRequest;
 using Application.DTOs.Medication;
 using AutoMapper;
@@ -24,5 +25,8 @@ public class MappingProfile : Profile
 
         CreateMap<CreateDroneRequestDto, DroneRequest>().ReverseMap();
         CreateMap<CreateDroneRequestResponseDto, DroneRequest>().ReverseMap();
+
+        CreateMap<AddDronePayloadDto, DronePayload>().ReverseMap();
+        CreateMap<AddedDronePayloadResponseDto, DronePayload>().ReverseMap();
     }
 }
