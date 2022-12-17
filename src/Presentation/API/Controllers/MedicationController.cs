@@ -23,10 +23,23 @@ public class MedicationController : BaseController
     /// Add a new medication
     /// </summary>
     /// <param name="request"></param>
-    /// <returns></returns>
+    /// <returns>A newly created medication</returns>
+    /// <remarks>
+    /// Sample request :
+    ///
+    ///     POST /api/v1/medication
+    ///     {
+    ///         "name": "",
+    ///         "weight": 0,
+    ///         "code": "",
+    ///         "image": ""
+    ///     }
+    /// </remarks>
+    /// <returns code="201">Returns a newly created medication</returns>
+    /// <returns code="500">Internal server error</returns>
     [HttpPost(Name = "AddMedication")]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateMedication([FromBody] CreateMedicationDto request)
     {
         var command = new CreateMedicationCommand() { CreateMedication = request };
@@ -42,8 +55,8 @@ public class MedicationController : BaseController
     /// <returns code="200">Medication details by Id</returns>
     /// <returns code="404">Medication details not found</returns>
     [HttpGet(Name = "GetMedication")]
-    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BaseCommandResponse<Medication>))]
-    [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(BaseCommandResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseCommandResponse<Medication>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseCommandResponse))]
     public async Task<IActionResult> GetMedicationId([FromQuery] MedicationDetailsParamsDto request )
     {
 

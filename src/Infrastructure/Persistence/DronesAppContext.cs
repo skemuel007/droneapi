@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Protocols;
 
 namespace Persistence;
 
+#pragma warning disable CS1591
 public class DronesAppContext : DbContext
 {
     /*protected readonly IConfiguration Configuration;
@@ -75,3 +76,4 @@ public class DronesAppContext : DbContext
         });
     }
 }
+#pragma warning restore CS1591

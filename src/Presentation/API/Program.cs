@@ -1,3 +1,4 @@
+using System.Reflection;
 using Application;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using HealthChecks.UI.Client;
@@ -9,6 +10,7 @@ using Serilog;
 using Shared;
 using API.Extensions;
 using Application.Models;
+using Microsoft.OpenApi.Models;
 using Persistence.Implementation.Audit;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -57,7 +59,18 @@ builder.Services.AddAuditTrail<AuditTrailLog>(options =>
 builder.Services.AddEndpointsApiExplorer();
 
 #region -- Swagger Support and API versioning
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Version = "v1",
+        Title = "Drone App API",
+        Description = "A Musala Soft Test"
+    });
+
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 
 builder.Services.AddApiVersioning(o =>
 {
