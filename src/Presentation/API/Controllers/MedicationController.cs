@@ -3,6 +3,7 @@ using Application.DTOs.Common;
 using Application.DTOs.Medication;
 using Application.Features.Medication.Request.Commands;
 using Application.Features.Medication.Request.Queries;
+using Application.Responses;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -37,10 +38,12 @@ public class MedicationController : BaseController
     /// Get Medication
     /// </summary>
     /// <param name="request"></param>
-    /// <returns></returns>
+    /// <returns>Medication details by Id</returns>
+    /// <returns code="200">Medication details by Id</returns>
+    /// <returns code="404">Medication details not found</returns>
     [HttpGet(Name = "GetMedication")]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BaseCommandResponse<Medication>))]
+    [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(BaseCommandResponse))]
     public async Task<IActionResult> GetMedicationId([FromQuery] MedicationDetailsParamsDto request )
     {
 
