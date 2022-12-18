@@ -51,10 +51,15 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
 
         if (validationResult.IsValid == false)
         {
+            var errorMessage = "Drone payload creation validation failed";
+            var validationErrors = validationResult.Errors.Select(v => v.ErrorMessage).ToList();
+
+            _logger.LogError($"{errorMessage} with validation errors {validationErrors}");
+
             return new BaseCommandResponse<AddedDronePayloadResponseDto>()
             {
-                Message = "Drone payload creation validation failed.",
-                Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
+                Message = $"{errorMessage}.",
+                Errors = validationErrors,
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };
         }
@@ -69,9 +74,12 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
         if (droneRequestDetails.Drone.State == DroneState.LOADING &&
                 droneRequestDetails.Drone.BatteryCapacity < _droneConfiguration.MinBatteryCapacity)
         {
+            var errorMessage = $"Drone battery capacity is less than {_droneConfiguration.MinBatteryCapacity} percent";
+            _logger.LogError(errorMessage);
+
             return new BaseCommandResponse<AddedDronePayloadResponseDto>()
             {
-                Message = $"Drone battery capacity is less than {_droneConfiguration.MinBatteryCapacity} percent",
+                Message = errorMessage,
                 StatusCode = HttpStatusCode.BadRequest
             };
         }
@@ -91,15 +99,19 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
             // validate drone total weight
             if (totalPayloadWeight > droneRequestDetails.Drone.WeightLimit)
             {
+                var errorMessage = $"Total payload {totalPayloadWeight} for this request exceeds drone capacity: {droneRequestDetails.Drone.WeightLimit}";
+                _logger.LogError(errorMessage);
                 return new BaseCommandResponse<AddedDronePayloadResponseDto>()
                 {
-                    Message = $"Total payload {totalPayloadWeight} for this request exceeds drone capacity: {droneRequestDetails.Drone.WeightLimit}",
+                    Message = errorMessage,
                     StatusCode = HttpStatusCode.BadRequest
                 };
             }
             
             await _unitOfWork.CompleteAsync(); // update drone quantity
             var existingDronePayloadResponse = _mapper.Map<AddedDronePayloadResponseDto>(existingDronePayload);
+
+            _logger.LogInformation("Payload was successfully added to drone");
 
             return new BaseCommandResponse<AddedDronePayloadResponseDto>()
             {

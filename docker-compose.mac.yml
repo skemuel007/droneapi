@@ -9,3 +9,9 @@ services:
 
   arm_db:
     image: mcr.microsoft.com/azure-sql-edge
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
