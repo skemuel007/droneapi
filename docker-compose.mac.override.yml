@@ -1,4 +1,4 @@
-﻿version: '3.4'
+﻿version: '3.9'
 
 services:
   api:
@@ -11,6 +11,8 @@ services:
     volumes:
       - ~/.aspnet/https:/root/.aspnet/https:ro
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    networks:
+      - droneapi
 
   arm_db:
     container_name: drone_arm_db
@@ -24,18 +26,25 @@ services:
       - "1433:1433"
     volumes:
       - drones_arm_data:/var/opt/mssql
+    networks:
+      - droneapi
 
   elasticsearch:
     container_name: elasticsearch
     environment:
-      - xpack.monitoring.enabled=true
-      - xpack.watcher.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
+      #- xpack.monitoring.enabled=true
+      # - xpack.watcher.enabled=false
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-"Xms1g -Xmx1g"
+      - "discovery.type=single-node"
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
-      - "9200:9200"
+      - target: 9200
+        published: 9200
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - droneapi
 
   kibana:
     container_name: kibana
@@ -44,8 +53,16 @@ services:
     depends_on:
       - elasticsearch
     ports:
-      - "5601:5601"
+      - target: 5601
+        published: 5601
+    networks:
+      - droneapi 
         
 volumes:
   drones_arm_data:
   elasticsearch-data:
+    driver: local
+
+networks:
+  droneapi:
+    driver: bridge
