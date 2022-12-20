@@ -20,21 +20,6 @@ public class DroneController : BaseController
     }
 
     /// <summary>
-    /// Registers a new drone
-    /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
-    [HttpPost(Name = "RegisterDrone")]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<IActionResult> Post([FromBody] CreateDroneDto request)
-    {
-        var command = new CreateDroneCommand() { DroneDto = request };
-        var createDroneResponse = await _mediator.Send(command);
-        return StatusCode((int)createDroneResponse.StatusCode, createDroneResponse);
-    }
-
-    /// <summary>
     /// Get paginated drone list
     /// </summary>
     /// <param name="queryParams"></param>
@@ -57,6 +42,32 @@ public class DroneController : BaseController
             }
         });
 
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get drone states
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("drone_states", Name = "DroneStates")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetDroneStates()
+    {
+        var response = await _mediator.Send(new GetDroneStatesRequest());
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get drone models
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("drone_models", Name = "DroneModels")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetDroneModels()
+    {
+        var response = await _mediator.Send(new GetDroneModelsRequest());
         return Ok(response);
     }
 

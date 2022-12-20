@@ -28,5 +28,10 @@ public class MappingProfile : Profile
 
         CreateMap<AddDronePayloadDto, DronePayload>().ReverseMap();
         CreateMap<AddedDronePayloadResponseDto, DronePayload>().ReverseMap();
+
+
+        CreateMap<AddDronePayloadDto, AddedDronePayloadResponseDto>().ReverseMap();
+
+        
     }
 }

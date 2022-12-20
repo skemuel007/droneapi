@@ -1,6 +1,8 @@
 using System.Net;
 using Application.DTOs.DroneRequest;
+using Application.Features.Drone.Request.Queries;
 using Application.Features.DroneRequest.Request.Commands;
+using Application.Features.DroneRequest.Request.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +12,7 @@ namespace API.Controllers;
 public class DroneRequestController : BaseController
 {
     private IMediator _mediator;
+
     public DroneRequestController(IMediator mediator)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -28,5 +31,18 @@ public class DroneRequestController : BaseController
         var command = new CreateDroneRequestCommand() { DroneRequestDto = request };
         var response = await _mediator.Send(command);
         return StatusCode((int)response.StatusCode, response);
+    }
+
+    /// <summary>
+    /// Get drone request states
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("drone_request_states", Name = "DroneRequestStates")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetDroneRequestState()
+    {
+        var response = await _mediator.Send(new GetDroneRequestStateRequest());
+        return Ok(response);
     }
 }

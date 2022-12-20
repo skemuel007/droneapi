@@ -15,3 +15,6 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.5.3
+
+  portainer:
+    image: portainer/portainer-ce

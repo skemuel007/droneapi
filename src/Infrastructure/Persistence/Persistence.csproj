@@ -16,4 +16,7 @@
       <ProjectReference Include="..\..\Core\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Enums.NET" />
+    </ItemGroup>
 </Project>

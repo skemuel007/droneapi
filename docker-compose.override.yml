@@ -34,14 +34,15 @@ services:
     networks:
       - droneapi 
 
+  # Elasticsearch
   elasticsearch:
     container_name: elasticsearch
     environment:
-      - xpack.monitoring.enabled=true
-      - xpack.watcher.enabled=false
+      #- xpack.monitoring.enabled=true
+      # - xpack.watcher.enabled=false
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - discovery.type=single-node
+      - "discovery.type=single-node"
       # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - target: 9200
@@ -51,6 +52,7 @@ services:
     networks:
       - droneapi
 
+  # Kibana
   kibana:
     container_name: kibana
     environment:
@@ -61,9 +63,24 @@ services:
       - target: 5601
         published: 5601
     networks:
-      - droneapi 
+      - droneapi
+
+  # Portainer
+  portainer:
+    container_name: portainer
+    restart: always
+    ports:
+      - "8080:8000"
+      - "9000:9000"
+    command: --admin-password '$$2y$$05$$ZBq/6oanDzs3iwkhQCxF2uKoJsGXA0SI4jdu1PkFrnsKfpCH5Ae4G' # admin/superpassword
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer1_data:/data
+    networks:
+      - droneapi
         
 volumes:
   drones_data:
+  portainer1_data:
   elasticsearch-data:
     driver: local
