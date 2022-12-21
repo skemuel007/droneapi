@@ -4,16 +4,19 @@ using Application.Contracts.Persistence;
 using Application.DTOs.Drone.Validators;
 using Application.DTOs.DronePayload;
 using Application.DTOs.DronePayload.Validators;
+using Application.DTOs.DroneRequest;
 using Application.Features.DronePayload.Request.Commands;
 using Application.Models;
 using Application.Responses;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Application.Features.DronePayload.Handlers.Commands;
 
@@ -86,7 +89,7 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
         }
 
         if (command.DronePayloadDto.MedicationId.HasValue &&
-            command.DronePayloadDto.MedicationIds?.Count > 0)
+            command.DronePayloadDto.Payload?.Count > 0)
         {
             var errorMessage = $"Either load a single item or multiple item but not both";
             _logger.LogError(errorMessage);
@@ -102,7 +105,7 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
             return await DoSinglePayloadAdd(command, droneRequestDetails);
         }
 
-        if(command.DronePayloadDto.MedicationIds?.Count > 0) {
+        if(command.DronePayloadDto.Payload?.Count > 0) {
 
             return await DoMultiPayloadAdd(command, droneRequestDetails);
         }
@@ -202,6 +205,8 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
         // calculate drone weight
         decimal totalPayloadWeight = 0.0m;
 
+        
+
         var medicationIncludes = new List<Expression<Func<Domain.Entities.DronePayload, object>>> { x => x.Medication };
 
         var existingDronePayloads = await _dronePayloadRepository.GetAsEnumerableAsync(
@@ -213,26 +218,25 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
             totalPayloadWeight += existingDronePayloads.Sum(x => x.Quantity * x.Medication.Weight);
         }
 
-        command.DronePayloadDto.MedicationIds = command.DronePayloadDto.MedicationIds?.Distinct().ToList();
-
-        foreach (var medicationId in command.DronePayloadDto.MedicationIds)
+        // calculate existing weight of drone + new payload data for drone request
+        foreach (var medicationPayload in command.DronePayloadDto.Payload)
         {
 
             var existingDronePayload = await _dronePayloadRepository.FirstOrDefaultAsync(
             predicate: (d => d.DroneRequestId == command.DronePayloadDto.DroneRequestId
-                             && d.MedicationId == medicationId), includes: medicationIncludes);
+                             && d.MedicationId == medicationPayload.MedicationId), includes: medicationIncludes);
 
 
             if (existingDronePayload != null)
             {
-                existingDronePayload.Quantity += command.DronePayloadDto.Quantity;
+                existingDronePayload.Quantity += medicationPayload.Quantity;
                 totalPayloadWeight += existingDronePayload.Quantity * existingDronePayload.Medication.Weight;
 
             } else
             {
                 var droneMedication =
-                  await _medicationRepository.FirstOrDefaultAsync(m => m.Id == medicationId);
-                totalPayloadWeight += command.DronePayloadDto.Quantity * droneMedication.Weight;
+                  await _medicationRepository.FirstOrDefaultAsync(m => m.Id == medicationPayload.MedicationId);
+                totalPayloadWeight += medicationPayload.Quantity * droneMedication.Weight;
             }
 
         }
@@ -250,18 +254,19 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
         }
 
 
-        foreach (var medicationId in command.DronePayloadDto.MedicationIds)
+        foreach (var medicationPayload in command.DronePayloadDto.Payload)
         {
             var existingDronePayload = await _dronePayloadRepository.FirstOrDefaultAsync(
             predicate: (d => d.DroneRequestId == command.DronePayloadDto.DroneRequestId
-                             && d.MedicationId == medicationId));
+                             && d.MedicationId == medicationPayload.MedicationId), disableTracking: false);
 
             if (existingDronePayload != null)
             {
-                existingDronePayload.Quantity += command.DronePayloadDto.Quantity;
+                existingDronePayload.Quantity += medicationPayload.Quantity;
+                _dronePayloadRepository.Update(existingDronePayload);
                 await _unitOfWork.CompleteAsync();
 
-                _logger.LogInformation($"Successfully updated medication quantity {medicationId} for drone request {command.DronePayloadDto.DroneRequestId}");
+                _logger.LogInformation($"Successfully updated medication quantity {medicationPayload.MedicationId} for drone request {command.DronePayloadDto.DroneRequestId}");
 
             }
             else
@@ -269,12 +274,16 @@ public class AddDronePayloadCommandHandler : IRequestHandler<AddDronePayloadComm
                 
                 var dronePayload = await _dronePayloadRepository.AddAsync(new Domain.Entities.DronePayload
                 {
-                    MedicationId = medicationId,
-                    DroneRequestId = command.DronePayloadDto.DroneRequestId
+                    MedicationId = medicationPayload.MedicationId.Value,
+                    DroneRequestId = command.DronePayloadDto.DroneRequestId,
+                    Quantity = medicationPayload.Quantity,
+                    UpdatedAt= DateTime.UtcNow,
+                    CreatedAt= DateTime.UtcNow,
                 });
+
                 await _unitOfWork.CompleteAsync();
 
-                _logger.LogInformation($"Successfully added medication {medicationId} for drone request {command.DronePayloadDto.DroneRequestId}");
+                _logger.LogInformation($"Successfully added medication {medicationPayload.MedicationId} for drone request {command.DronePayloadDto.DroneRequestId}");
             }
         }
 

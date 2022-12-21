@@ -61,7 +61,20 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
         if (queryRequest.OrderBy != null)
             query = queryRequest.OrderBy(query);*/
-        
+
+        if (queryRequest.Predicate != null)
+            query = query.Where(queryRequest.Predicate);
+
+        if (queryRequest.Includes != null)
+            query = queryRequest.Includes.Aggregate(query, (current, include) => current.Include(include));
+
+        if (!string.IsNullOrEmpty(queryRequest.IncludeString))
+            query = query.Include(queryRequest.IncludeString);
+
+
+        if (queryRequest.OrderBy != null)
+            query =  queryRequest.OrderBy(query);
+
         if (!string.IsNullOrEmpty(queryRequest.FilterColumn) &&
             !string.IsNullOrEmpty(queryRequest.FilterQuery) &&
             IsValidProperty(queryRequest.FilterColumn))
@@ -114,6 +127,31 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         var query = await GetQueryable(predicate: predicate, orderBy: orderBy, includes: includes,
             disableTracking: disableTracking);
         return await query.ToListAsync();
+    }
+
+    public async Task<Paginated<T>> GetPaginated(PaginateQueryRequestNew<T> queryRequest)
+    {
+        var query = await GetQueryable(predicate: queryRequest.Predicate, orderBy: queryRequest.OrderBy, includes: queryRequest.Includes,
+            disableTracking: queryRequest.DisableTracking);
+
+
+        query = query.Skip((queryRequest.Page - 1) * queryRequest.PageSize)
+            .Take(queryRequest.PageSize);
+
+        var count = await query.CountAsync();
+
+        var data = await query.ToListAsync();
+
+        return await Paginated<T>.ToPaginatedList(
+            data: data,
+            count: count,
+            pageIndex: queryRequest.Page,
+            pageSize: queryRequest.PageSize,
+            sortOrder: null,
+            sortColumn: null,
+            filterColumn: null,
+            filterQuery: null);
+
     }
 
     private async Task<IQueryable<T>> GetQueryable(Expression<Func<T, bool>> predicate = null,

@@ -2,7 +2,6 @@ using Application.Contracts.Persistence;
 using FluentValidation;
 
 namespace Application.DTOs.Drone.Validators;
-
 public class CreateDroneDtoValidator : AbstractValidator<CreateDroneDto>
 {
     private readonly IDronesRepository _dronesRepository;

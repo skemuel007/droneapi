@@ -10,6 +10,7 @@ using Application.Responses;
 using AutoMapper;
 using Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Application.Features.DroneRequest.Handlers.Commands;
@@ -21,13 +22,15 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private DroneConfiguration _droneConfiguration;
+    private ILogger<CreateDroneRequestCommandHandler> _logger;
 
     public CreateDroneRequestCommandHandler(
         IDroneRequestRepository droneRequestRepository,
         IDronesRepository dronesRepository,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        IOptions<DroneConfiguration> droneConfigurationOption)
+        IOptions<DroneConfiguration> droneConfigurationOption,
+        ILogger<CreateDroneRequestCommandHandler> logger)
     {
         _droneRequestRepository =
             droneRequestRepository ?? throw new ArgumentNullException(nameof(droneRequestRepository));
@@ -35,6 +38,7 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _droneConfiguration = droneConfigurationOption.Value;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<BaseCommandResponse<CreateDroneRequestResponseDto>> Handle(CreateDroneRequestCommand command,
@@ -45,9 +49,11 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
 
         if (validationResult.IsValid == false)
         {
+            var message = "Drone request creation validation failed";
+            _logger.LogError(message);
             return new BaseCommandResponse<CreateDroneRequestResponseDto>()
             {
-                Message = "Drone request creation validation failed",
+                Message = message,
                 Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };
@@ -56,20 +62,22 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
         var droneStateCheck = await _dronesRepository.FirstOrDefaultAsync(d => d.Id == command.DroneRequestDto.DroneId, disableTracking: true);
         if (droneStateCheck.State != DroneState.IDLE)
         {
+            var message = "Cannot create drone request for drone not in Idle state";
+            _logger.LogError(message);
             return new BaseCommandResponse<CreateDroneRequestResponseDto>()
             {
-                Message = "Cannot create drone request for drone not in Idle state",
-                Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
+                Message = message,
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };
         }
 
         if (droneStateCheck.BatteryCapacity < _droneConfiguration.MinBatteryCapacity)
         {
+            var message = $"Cannot create drone request for drone with battery percentage less than {_droneConfiguration.MinBatteryCapacity} percent";
+            _logger.LogError(message);
             return new BaseCommandResponse<CreateDroneRequestResponseDto>()
             {
-                Message = $"Cannot create drone request for drone with battery percentage less than {_droneConfiguration.MinBatteryCapacity} percent",
-                Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
+                Message = message,
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };
         }
@@ -80,10 +88,11 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
 
         if (droneRequestStatusCheck)
         {
+            var message = $"Drone with id {command.DroneRequestDto.DroneId} is already engaged";
+            _logger.LogError(message);
             return new BaseCommandResponse<CreateDroneRequestResponseDto>()
             {
-                Message = $"Drone with id {command.DroneRequestDto.DroneId} is already engaged",
-                Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
+                Message = message,
                 StatusCode = HttpStatusCode.BadRequest
             }; 
         }
@@ -100,6 +109,7 @@ public class CreateDroneRequestCommandHandler : IRequestHandler<CreateDroneReque
 
         var droneRequestResponseDto = _mapper.Map<CreateDroneRequestResponseDto>(droneRequest);
 
+        _logger.LogInformation($"Drone request created successfully: {droneRequestResponseDto}");
 
         return new BaseCommandResponse<CreateDroneRequestResponseDto>()
         {

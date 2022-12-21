@@ -15,6 +15,7 @@ public interface IRepository<T> where T : BaseEntity
     Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate);
 
     Task<Paginated<T>> GetWherePaginated(PaginateQueryRequest<T> queryRequest);
+    Task<Paginated<T>> GetPaginated(PaginateQueryRequestNew<T> queryRequest);
     Task<IReadOnlyList<T>> GetAsync(Expression<Func<T, bool>> predicate = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
         string includeString = null,

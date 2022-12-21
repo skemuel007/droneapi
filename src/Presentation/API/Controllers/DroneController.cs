@@ -1,8 +1,10 @@
 using System.Net;
 using Application.DTOs.Common;
 using Application.DTOs.Drone;
+using Application.DTOs.DronePayload;
 using Application.Features.Drone.Request.Commands;
 using Application.Features.Drone.Request.Queries;
+using Application.Features.DronePayload.Request.Commands;
 using Application.Responses;
 using Domain.Entities;
 using MediatR;
@@ -69,26 +71,6 @@ public class DroneController : BaseController
     {
         var response = await _mediator.Send(new GetDroneModelsRequest());
         return Ok(response);
-    }
-
-    /// <summary>
-    /// Get drone details
-    /// </summary>
-    /// <param name="droneId"></param>
-    /// <returns></returns>
-    [HttpGet("{droneId}", Name = "GetDrone")]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetDroneById(Guid droneId)
-    {
-
-        var query = new GetDroneDetailsRequest()
-        {
-            Id = droneId
-        };
-        var response = await _mediator.Send(query);
-
-        return StatusCode((int)response.StatusCode, response);
     }
 
     /// <summary>

@@ -2,8 +2,7 @@ version: '3.9'
 
 networks:
   droneapi:
-    external:
-      name: droneapi
+    driver: bridge
 
 services:
   api:

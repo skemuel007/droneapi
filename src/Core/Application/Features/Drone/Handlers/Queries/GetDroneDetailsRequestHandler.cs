@@ -1,10 +1,12 @@
 using System.Net;
 using Application.Contracts.Persistence;
 using Application.DTOs.Drone;
+using Application.DTOs.Drone.Validators;
 using Application.Features.Drone.Request.Queries;
 using Application.Responses;
 using AutoMapper;
 using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Application.Features.Drone.Handlers.Queries;
 
@@ -23,17 +25,19 @@ public class GetDroneDetailsRequestHandler : IRequestHandler<GetDroneDetailsRequ
     public async Task<BaseCommandResponse<DroneDto>> Handle(GetDroneDetailsRequest request,
         CancellationToken cancellationToken)
     {
-        var drone = await _dronesRepository.GetByIdAsync(request.Id);
+        var validator = new DroneDetailsRequestDtoValidator(_dronesRepository);
+        var validationResult = await validator.ValidateAsync(request.DroneDetailsRequestDto);
 
-        if (drone == null)
+        if (validationResult.IsValid == false)
         {
-            return new BaseCommandResponse<DroneDto>
+            return new BaseCommandResponse<DroneDto>()
             {
-                StatusCode = HttpStatusCode.NotFound,
-                Success = false,
-                Message = "No such drone record"
+                Message = "Drone creation validation failed",
+                Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
+                StatusCode = HttpStatusCode.UnprocessableEntity
             };
         }
+        var drone = await _dronesRepository.FirstOrDefaultAsync(d => d.SerialNumber == request.DroneDetailsRequestDto.SerialNumber || d.Id == request.DroneDetailsRequestDto.Id);
 
         var droneDto = _mapper.Map<DroneDto>(drone);
 

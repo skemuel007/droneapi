@@ -116,3 +116,4 @@ public class Paginated<T> : BaseCommandResponse
     public string? FilterColumn { get; set; }
     public string? FilterQuery { get; set; }
 }
+

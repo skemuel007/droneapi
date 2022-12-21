@@ -1,17 +1,15 @@
 using System.Net;
 using Application.Contracts.Persistence;
-using Application.DTOs.Common;
 using Application.Features.Drone.Request.Queries;
 using Application.Responses;
 using AutoMapper;
 using MediatR;
 
 namespace Application.Features.Drone.Handlers.Queries;
-
 public class GetDroneListRequestHandler : IRequestHandler<GetDroneListRequest, Paginated<Domain.Entities.Drone>>
 {
-    private readonly IDronesRepository _dronesRepository;
 
+    private readonly IDronesRepository _dronesRepository;
     public GetDroneListRequestHandler(
         IDronesRepository dronesRepository)
     {

@@ -8,3 +8,8 @@ public class AddDronePayloadCommand: IRequest<BaseCommandResponse<AddedDronePayl
 {
     public AddDronePayloadDto DronePayloadDto { get; set; }
 }
+
+public class LoadDroneWithPayloadCommand : IRequest<BaseCommandResponse<LoadedPayloadResponseDto>>
+{
+    public LoadDroneWithItemDto DronePayloadDto { get; set; }
+}

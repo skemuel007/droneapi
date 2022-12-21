@@ -6,7 +6,6 @@ using Application.Responses;
 using MediatR;
 
 namespace Application.Features.Medication.Handlers.Queries;
-
 public class GetMedicationListRequestHandler : IRequestHandler<GetMedicationListRequest, Paginated<Domain.Entities.Medication>>
 {
     private readonly IMedicationRepository _medicationRepository;

@@ -6,5 +6,5 @@ namespace Application.Features.Drone.Request.Queries;
 
 public class GetDroneDetailsRequest : IRequest<BaseCommandResponse<DroneDto>>
 {
-    public Guid Id { get; set; }
+    public DroneDetailsRequestDto DroneDetailsRequestDto { get; set; }
 }

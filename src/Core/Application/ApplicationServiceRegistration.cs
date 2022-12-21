@@ -1,4 +1,5 @@
 using System.Reflection;
+using Application.Behaviours;
 using Application.Models;
 using FluentValidation;
 using MediatR;
@@ -14,6 +15,8 @@ public static class ApplicationServiceRegistration
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddMediatR(Assembly.GetExecutingAssembly());
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 
         services.Configure<DroneConfiguration>(configuration.GetSection("DroneConfiguration"));
 

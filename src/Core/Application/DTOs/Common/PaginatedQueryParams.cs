@@ -8,4 +8,5 @@ public class PaginatedQueryParams
     public string? SortOrder { get; set; }
     public string? FilterColumn { get; set; }
     public string? FilterQuery { get; set; }
+
 }
