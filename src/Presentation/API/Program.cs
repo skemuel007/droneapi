@@ -12,6 +12,10 @@ using API.Extensions;
 using Application.Models;
 using Microsoft.OpenApi.Models;
 using Persistence.Implementation.Audit;
+using Hangfire;
+using System.Configuration;
+using Application.Contracts.Infrastructure;
+using MediatR;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var indexPerMonth = false;
@@ -48,6 +52,15 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.WriteIndented = true;
     });
+
+#region-- Hangfire Setup
+builder.Services.AddHangfire(x =>
+{
+    x.UseSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings() { TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All });
+    x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DronesAppConnectionString"));
+});
+builder.Services.AddHangfireServer();
+#endregion
 
 builder.Services.Configure<ElasticSearchSettings>(builder.Configuration.GetSection("ElasticConfiguration"));
 // builder.Services.Configure<DroneConfiguration>(builder.Configuration.GetSection("DroneConfiguration"));
@@ -112,6 +125,8 @@ app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 
+app.UseHangfireDashboard();
+
 app.MapControllers();
 
 app.MapHealthChecks("/hc", new HealthCheckOptions
@@ -120,6 +135,9 @@ app.MapHealthChecks("/hc", new HealthCheckOptions
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 
 });
+
+RecurringJob.AddOrUpdate<IDroneBatteryCheckerService>("Drone Battery Level Checker", d => d.CheckDroneBatteryLevels(), 
+    builder.Configuration.GetSection("DroneBatteryLevelInterval").Value);
 
 app.MigrateDatabase<DronesAppContext>((context, services) =>
 {

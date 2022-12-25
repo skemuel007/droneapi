@@ -1,7 +1,9 @@
+using Application.Contracts.Infrastructure;
 using Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence.Implementation.Drone;
 using Persistence.Repositories;
 
 namespace Persistence;
@@ -16,15 +18,16 @@ public static class PersistenceServiceRegistration
             options.UseSqlServer(connectionString));
         
         #region -- Add Repository to service collection
-
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IDronesRepository, DroneRepository>();
         services.AddScoped<IMedicationRepository, MedicationRepository>();
         services.AddScoped<IDroneRequestRepository, DroneRequestRepository>();
         services.AddScoped<IDronePayloadRepository, DronePayloadRepository>();
+        #endregion
 
-
+        #region -- Service Registration
+        services.AddScoped<IDroneBatteryCheckerService, DroneBatteryCheckerService>();
         #endregion
         return services;
     }

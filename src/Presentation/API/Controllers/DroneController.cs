@@ -94,7 +94,7 @@ public class DroneController : BaseController
     /// <summary>
     /// Delete drone
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="droneId"></param>
     /// <returns></returns>
     [HttpDelete("{droneId}", Name = "DeleteDrone")]
     [ProducesResponseType(StatusCodes.Status200OK)]

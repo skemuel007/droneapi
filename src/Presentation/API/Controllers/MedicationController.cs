@@ -116,7 +116,7 @@ public class MedicationController : BaseController
     /// <summary>
     /// Delete medication
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="medicationId"></param>
     /// <returns></returns>
     [HttpDelete("{medicationId}", Name = "DeleteMedication")]
     [ProducesResponseType(StatusCodes.Status200OK)]
