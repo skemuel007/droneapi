@@ -32,11 +32,12 @@ public class GetDroneDetailsRequestHandler : IRequestHandler<GetDroneDetailsRequ
         {
             return new BaseCommandResponse<DroneDto>()
             {
-                Message = "Drone creation validation failed",
+                Message = "Drone request validation failed",
                 Errors = validationResult.Errors.Select(v => v.ErrorMessage).ToList(),
                 StatusCode = HttpStatusCode.UnprocessableEntity
             };
         }
+        
         var drone = await _dronesRepository.FirstOrDefaultAsync(d => d.SerialNumber == request.DroneDetailsRequestDto.SerialNumber || d.Id == request.DroneDetailsRequestDto.Id);
 
         var droneDto = _mapper.Map<DroneDto>(drone);

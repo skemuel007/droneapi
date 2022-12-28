@@ -27,7 +27,7 @@ public class Paginated<T> : BaseCommandResponse
         FilterQuery = filterQuery;
     }
 
-    public static async Task<Paginated<T>> ToPaginatedList(
+    public static Paginated<T> ToPaginatedList(
         List<T> data,
         int count,
         int pageIndex,

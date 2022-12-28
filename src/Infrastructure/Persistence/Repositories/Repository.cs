@@ -111,7 +111,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             filterColumn: queryRequest.FilterColumn,
             filterQuery: queryRequest.FilterQuery);*/
         
-        return await Paginated<T>.ToPaginatedList(
+        return Paginated<T>.ToPaginatedList(
             data: data,
             count: count,
             pageIndex: queryRequest.Page,
@@ -142,7 +142,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
         var data = await query.ToListAsync();
 
-        return await Paginated<T>.ToPaginatedList(
+        return Paginated<T>.ToPaginatedList(
             data: data,
             count: count,
             pageIndex: queryRequest.Page,

@@ -1,4 +1,5 @@
 using System.Net;
+using Application.Contracts.Infrastructure;
 using Application.Contracts.Persistence;
 using Application.DTOs.Drone.Validators;
 using Application.Features.Drone.Request.Commands;
@@ -13,14 +14,17 @@ public class CreateDroneCommandHandler : IRequestHandler<CreateDroneCommand, Bas
     private readonly IDronesRepository _dronesRepository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
     public CreateDroneCommandHandler(IDronesRepository dronesRepository,
         IMapper mapper,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICacheService cacheService)
     {
         _dronesRepository = dronesRepository ?? throw new ArgumentNullException(nameof(dronesRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
     }
 
     public async Task<BaseCommandResponse<Domain.Entities.Drone>> Handle(CreateDroneCommand command, CancellationToken cancellationToken)
@@ -41,6 +45,8 @@ public class CreateDroneCommandHandler : IRequestHandler<CreateDroneCommand, Bas
         var drone = _mapper.Map<Domain.Entities.Drone>(command.DroneDto);
         drone = await _dronesRepository.AddAsync(drone);
         await _unitOfWork.CompleteAsync();
+
+        await _cacheService.RemoveData("drones"); // invalidate cache
 
         return new BaseCommandResponse<Domain.Entities.Drone>()
         {

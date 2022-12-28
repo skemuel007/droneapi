@@ -51,6 +51,17 @@ To run tests, run the following command
 
 ## Technologies Used
 
+**Features**
+* Unit of Work
+* Repository Pattern (Dependency Injection)
+* MediatR and CQRS
+* SOLID Principle
+* Unit Test
+* API Version and Swagger support
+* Rate Limiting and Throttling Support
+* Logging
+* Global Error Handler
+
 **Tech Stack**
 * C#, .NET Core
 

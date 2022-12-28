@@ -3,8 +3,6 @@ using Application;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Persistence;
 using Serilog;
 using Shared;
@@ -13,9 +11,11 @@ using Application.Models;
 using Microsoft.OpenApi.Models;
 using Persistence.Implementation.Audit;
 using Hangfire;
-using System.Configuration;
+using API.Exceptions;
 using Application.Contracts.Infrastructure;
-using MediatR;
+using AspNetCoreRateLimit;
+using Hangfire.Dashboard;
+using Microsoft.AspNetCore.Http.Features;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var indexPerMonth = false;
@@ -47,11 +47,21 @@ builder.Services.AddCors(options =>
                 .WithExposedHeaders("X-Pagination");
         });
 });
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.WriteIndented = true;
     });
+
+#region -- Configures services for Multipart body length
+builder.Services.Configure<FormOptions>(o =>
+{
+    o.ValueLengthLimit = int.MaxValue;
+    o.MultipartBodyLengthLimit = int.MaxValue;
+    o.MemoryBufferThreshold = int.MaxValue;
+});
+#endregion
 
 #region-- Hangfire Setup
 builder.Services.AddHangfire(x =>
@@ -68,6 +78,12 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddAuditTrail<AuditTrailLog>(options =>
     options.UseSettings(indexPerMonth, amountOfPreviousIndicesUsedInAlias));
+
+builder.Services.AddMemoryCache();
+
+// configure rate limiting
+builder.Services.ConfigureRateLmitOptions(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -117,7 +133,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
+
+app.UseMiddleware<GlobalErrorHandlerMiddleware>();
+
+app.UseIpRateLimiting();
 
 app.UseRouting();
 
@@ -125,11 +145,15 @@ app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 
-app.UseHangfireDashboard();
+var options = new DashboardOptions()
+{
+    Authorization = new[] { new MyAuthorizationFilter() }
+};
+app.UseHangfireDashboard("/hangfire", options);
 
 app.MapControllers();
 
-app.MapHealthChecks("/hc", new HealthCheckOptions
+app.MapHealthChecks("/health", new HealthCheckOptions
 {
     Predicate = _ => true,
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
@@ -147,3 +171,9 @@ app.MigrateDatabase<DronesAppContext>((context, services) =>
         .Wait();
 
 }).Run();
+
+// to enable hangfire dashboard in docker
+public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context) => true;
+}

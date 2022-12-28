@@ -3,6 +3,7 @@ using Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence.Implementation.Cache;
 using Persistence.Implementation.Drone;
 using Persistence.Repositories;
 
@@ -27,6 +28,12 @@ public static class PersistenceServiceRegistration
         #endregion
 
         #region -- Service Registration
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetValue<string>("CacheSettings:ConnectionString");
+        });
+        services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IDroneBatteryCheckerService, DroneBatteryCheckerService>();
         #endregion
         return services;
