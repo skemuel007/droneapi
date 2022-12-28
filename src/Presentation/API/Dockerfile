@@ -3,15 +3,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+# EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/Presentation/API/API.csproj", "src/Presentation/API/"]
 COPY ["src/Core/Application/Application.csproj", "src/Core/Application/"]
 COPY ["src/Core/Domain/Domain.csproj", "src/Core/Domain/"]
-COPY ["src/Core/Domain/Shared.csproj", "src/Core/Shared/"]
+COPY ["src/Core/Shared/Shared.csproj", "src/Core/Shared/"]
 COPY ["src/Infrastructure/Persistence/Persistence.csproj", "src/Infrastructure/Persistence/"]
+# COPY ["src/Tests/DroneApp.Test/DroneApp.Test.csproj", "src/Tests/DroneApp.Test/"]
 RUN dotnet restore "src/Presentation/API/API.csproj"
 COPY . .
 WORKDIR "/src/src/Presentation/API"
