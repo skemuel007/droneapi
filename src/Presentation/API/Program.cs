@@ -174,6 +174,6 @@ app.MigrateDatabase<DronesAppContext>((context, services) =>
 
 // to enable hangfire dashboard in docker
 public class MyAuthorizationFilter : IDashboardAuthorizationFilter
-{
+{ 
     public bool Authorize(DashboardContext context) => true;
 }
